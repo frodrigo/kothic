@@ -269,23 +269,23 @@ class MapCSS():
                         cond = CONDITION.match(css).groups()[0]
                         c = parseCondition(cond)
                         tag = c.extract_tag()
-                        tag_type = static_tags.get(tag, None)
-                        if tag == "*" or tag_type is not None:
-                            if tag_type and had_main_tag:
-                                if '!' in cond:
-                                    condType = 'ne'
-                                    cond = cond.replace('!', '')
-                                else:
-                                    condType = 'eq'
-                                sc.addRuntimeCondition(Condition(condType, ('extra_tag', cond)))
-                            else:
+                        #tag_type = static_tags.get(tag, None)
+                        if True:#tag == "*":# or tag_type is not None:
+#                            if tag_type and had_main_tag:
+#                                if '!' in cond:
+#                                    condType = 'ne'
+#                                    cond = cond.replace('!', '')
+#                                else:
+#                                    condType = 'eq'
+#                                sc.addRuntimeCondition(Condition(condType, ('extra_tag', cond)))
+#                            else:
                                 sc.addCondition(c)
-                                if tag_type:
-                                    had_main_tag = True
-                        elif tag in dynamic_tags:
-                            sc.addRuntimeCondition(c)
-                        else:
-                            raise Exception("Unknown tag '" + tag + "' in condition " + cond)
+#                                if tag_type:
+#                                    had_main_tag = True
+#                        elif tag in dynamic_tags:
+#                            sc.addRuntimeCondition(c)
+#                        else:
+#                            raise Exception("Unknown tag '" + tag + "' in condition " + cond)
                         css = CONDITION.sub("", css, 1)
                         previous = oCONDITION
 
@@ -475,6 +475,10 @@ def parseDeclaration(s):
     return [t]
 
 
+import sys
 if __name__ == "__main__":
     logging.basicConfig(level=logging.WARNING)
     mc = MapCSS(0, 19)
+
+    mc.parse(filename = sys.argv[1])
+    print mc.choosers
