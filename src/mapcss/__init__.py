@@ -33,6 +33,7 @@ NOT_CLASS = re.compile(r'!([\.:]\w+) \s* ', re.S | re.X)
 ZOOM = re.compile(r'\| \s* z([\d\-]+) \s* ', re.I | re.S | re.X)
 GROUP = re.compile(r', \s* ', re.I | re.S | re.X)
 CONDITION = re.compile(r'\[(.+?)\] \s* ', re.S | re.X)
+SELECTORS_OPERATOR = re.compile(r'\s* (∈|⧉|>(\[.+?\])?) \s* ', re.S | re.X)
 OBJECT = re.compile(r'(\*|[\w]+) \s* ', re.S | re.X)
 DECLARATION = re.compile(r'\{(([^\}"]*"[^"]*")*[^\}]*)\} \s* ', re.S | re.X)
 IMPORT = re.compile(r'@import\("(.+?)"\); \s* ', re.S | re.X)
@@ -72,6 +73,7 @@ oOBJECT = 5
 oDECLARATION = 6
 oSUBPART = 7
 oVARIABLE_SET = 8
+oSELECTORS_OPERATOR = 9
 
 DASH = re.compile(r'\-/g')
 COLOR = re.compile(r'color$/')
@@ -263,7 +265,7 @@ class MapCSS():
                             self.choosers.append(sc)
                             sc = StyleChooser(self.scalepair)
                             had_main_tag = False
-                        if (previous != oOBJECT) and (previous != oZOOM) and (previous != oCONDITION):
+                        if (previous != oOBJECT) and (previous != oZOOM) and (previous != oCONDITION) and (previous != oSELECTORS_OPERATOR):
                             sc.newObject()
                             had_main_tag = False
                         cond = CONDITION.match(css).groups()[0]
@@ -289,6 +291,15 @@ class MapCSS():
                         css = CONDITION.sub("", css, 1)
                         previous = oCONDITION
 
+                    # Selectors operator, way[...] > node[...]
+                    elif SELECTORS_OPERATOR.match(css):
+                        if (previous != oOBJECT) and (previous != oZOOM) and (previous != oCONDITION):
+                            raise Exception("Selector Operator without selector")
+                        op = SELECTORS_OPERATOR.match(css).groups()[0]
+                        sc.addSelectorsOperator(op)
+                        css = SELECTORS_OPERATOR.sub("", css, 1)
+                        previous = oSELECTORS_OPERATOR
+
                     # Object - way, node, relation
                     elif OBJECT.match(css):
                         if (previous == oDECLARATION):
@@ -297,7 +308,8 @@ class MapCSS():
                         obj = OBJECT.match(css).groups()[0]
                         log.debug("object found: %s" % (obj))
                         css = OBJECT.sub("", css, 1)
-                        sc.newObject(obj)
+                        if (previous != oSELECTORS_OPERATOR):
+                            sc.newObject(obj)
                         had_main_tag = False
                         previous = oOBJECT
 

@@ -252,6 +252,13 @@ class StyleChooser:
         self.ruleChains[-1].runtime_conditions.append(c)
         self.ruleChains[-1].runtime_conditions.sort()
 
+    def addSelectorsOperator(self, c):
+        # print "addSelectorsOperator ", c
+        """
+        adds into the current ruleChain (existing Rule)
+        """
+        self.ruleChains[-1].conditions.append(c)
+
     def addStyles(self, a):
         # print "addStyle ", a
         """
