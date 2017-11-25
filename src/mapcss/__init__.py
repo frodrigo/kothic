@@ -29,7 +29,7 @@ WHITESPACE = re.compile(r'\s+ ', re.S | re.X)
 
 COMMENT = re.compile(r'\/\* .*? \*\/ \s* ', re.S | re.X)
 CLASS = re.compile(r'([\.:]:?[*\w]+) \s* ', re.S | re.X)
-#NOT_CLASS = re.compile(r'!([\.:]\w+) \s* ', re.S | re.X)
+NOT_CLASS = re.compile(r'!([\.:]\w+) \s* ', re.S | re.X)
 ZOOM = re.compile(r'\| \s* z([\d\-]+) \s* ', re.I | re.S | re.X)
 GROUP = re.compile(r', \s* ', re.I | re.S | re.X)
 CONDITION = re.compile(r'\[(.+?)\] \s* ', re.S | re.X)
@@ -229,16 +229,16 @@ class MapCSS():
                         sc.addCondition(Condition('eq', ("::class", cond)))
                         previous = oCONDITION
 
-                    ## Not class - !.motorway, !.builtup, !:hover
-                    #elif NOT_CLASS.match(css):
-                        #if (previous == oDECLARATION):
-                            #self.choosers.append(sc)
-                            #sc = StyleChooser(self.scalepair)
-                        #cond = NOT_CLASS.match(css).groups()[0]
-                        #log.debug("not_class found: %s" % (cond))
-                        #css = NOT_CLASS.sub("", css, 1)
-                        #sc.addCondition(Condition('ne', ("::class", cond)))
-                        #previous = oCONDITION
+                    # Not class - !.motorway, !.builtup, !:hover
+                    elif NOT_CLASS.match(css):
+                        if (previous == oDECLARATION):
+                            self.choosers.append(sc)
+                            sc = StyleChooser(self.scalepair)
+                        cond = NOT_CLASS.match(css).groups()[0]
+                        log.debug("not_class found: %s" % (cond))
+                        css = NOT_CLASS.sub("", css, 1)
+                        sc.addCondition(Condition('ne', ("::class", cond)))
+                        previous = oCONDITION
 
                     # Zoom
                     elif ZOOM.match(css):
