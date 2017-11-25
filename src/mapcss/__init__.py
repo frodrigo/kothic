@@ -34,7 +34,7 @@ ZOOM = re.compile(r'\| \s* z([\d\-]+) \s* ', re.I | re.S | re.X)
 GROUP = re.compile(r', \s* ', re.I | re.S | re.X)
 CONDITION = re.compile(r'\[(.+?)\] \s* ', re.S | re.X)
 OBJECT = re.compile(r'(\*|[\w]+) \s* ', re.S | re.X)
-DECLARATION = re.compile(r'\{(.*?)\} \s* ', re.S | re.X)
+DECLARATION = re.compile(r'\{(([^\}"]*"[^"]*")*[^\}]*)\} \s* ', re.S | re.X)
 IMPORT = re.compile(r'@import\("(.+?)"\); \s* ', re.S | re.X)
 VARIABLE_SET = re.compile(r'@([a-z][\w\d]*) \s* : \s* (.+?) \s* ; \s* ', re.S | re.X | re.I)
 UNKNOWN = re.compile(r'(\S+) \s* ', re.S | re.X)
@@ -465,7 +465,7 @@ def parseDeclaration(s):
     """
     t = {}
     for a in s.split(';'):
-        # if ((o=ASSIGNMENT_EVAL.exec(a)))   { t[o[1].replace(DASH,'_')]=new Eval(o[2]); }
+        #if ((o=ASSIGNMENT_EVAL.exec(a)))   { t[o[1].replace(DASH,'_')]=new Eval(o[2]); }
         if ASSIGNMENT.match(a):
             tzz = ASSIGNMENT.match(a).groups()
             t[tzz[0]] = tzz[1].strip().strip('"')
