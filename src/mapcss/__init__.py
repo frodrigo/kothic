@@ -57,6 +57,7 @@ CONDITION_GE = re.compile(r'\s* ([:\w]+) \s* >= \s* (.+) \s* $', re.S | re.X)
 CONDITION_LT = re.compile(r'\s* ([:\w]+) \s* <  \s* (.+) \s* $', re.S | re.X)
 CONDITION_LE = re.compile(r'\s* ([:\w]+) \s* <= \s* (.+) \s* $', re.S | re.X)
 CONDITION_REGEX = re.compile(r'\s* ([:\w]+) \s* =~\/ \s* (.+) \/ \s* $', re.S | re.X)
+CONDITION_FUNCTION = re.compile(r'\s* ([a-z_][a-z_0-9]*)\((.*?)\) \s* $', re.S | re.X)
 
 ASSIGNMENT_EVAL = re.compile(r"\s* (\S+) \s* \:      \s* eval \s* \( \s* ' (.+?) ' \s* \) \s* $", re.I | re.S | re.X)
 ASSIGNMENT = re.compile(r'\s* (\S+) \s* \:      \s*          (.+?) \s*                   $', re.S | re.X)
@@ -466,6 +467,11 @@ def parseCondition(s):
         a = CONDITION_EQ.match(s).groups()
         log.debug("condition EQ: %s = %s" % (a[0], a[1]))
         return Condition('eq', a)
+
+    if CONDITION_FUNCTION.match(s):
+        a = CONDITION_FUNCTION.match(s).groups()
+        log.debug("condition FUNCTION: %s(%s)" % (a[0], a[1]))
+        return Condition('function', a)
 
     else:
         raise Exception("condition UNKNOWN: " + s)
